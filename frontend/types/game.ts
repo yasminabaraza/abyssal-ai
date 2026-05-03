@@ -33,6 +33,7 @@ export type Room = {
   image: string | null;
   order: number;
   isInitial: boolean;
+  idlePhrases: string[];
   objects: InteractiveObject[];
   puzzle: Puzzle | null;
 };
@@ -46,6 +47,7 @@ export type Room = {
 export type GameState = {
   hintsUsed: number;
   attemptsUsed: number;
+  aiHintsUsed: number;
   timeRemainingSeconds: number;
   score: number;
   solvedPuzzleIds: number[];
@@ -75,6 +77,7 @@ export type Game = {
   endReason?: GameEndReason | null;
   currentRoom: Room;
   state: GameState | null;
+  aiEnabled?: boolean;
   createdAt: string;
 };
 
@@ -131,6 +134,18 @@ export type UpdateGameStateRequest = {
 };
 
 export type UpdateGameStateResponse = { game: Game };
+
+export type AskAssistantRequest = {
+  gameId: number;
+  question: string;
+};
+
+export type AskAssistantResponse = {
+  reply: string;
+  aiHintsUsed: number;
+  aiHintsRemaining: number;
+  state: GameState;
+};
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
 

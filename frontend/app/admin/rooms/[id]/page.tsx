@@ -25,8 +25,8 @@ export default function EditRoomPage() {
   useEffect(() => {
     if (!roomId) return;
 
-    authRequest<Room>(`${ENDPOINTS.admin.rooms}/${roomId}`)
-      .then((data) => {
+    authRequest<{ room: Room }>(`${ENDPOINTS.admin.rooms}/${roomId}`)
+      .then(({ room: data }) => {
         setRoom(data);
         setFormData({
           name: data.name,

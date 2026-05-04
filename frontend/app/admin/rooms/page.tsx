@@ -10,8 +10,8 @@ export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
-    authRequest<Room[]>(ENDPOINTS.admin.rooms)
-      .then(setRooms)
+    authRequest<{ rooms: Room[] }>(ENDPOINTS.admin.rooms)
+      .then((res) => setRooms(res.rooms))
       .catch(console.error);
   }, []);
 

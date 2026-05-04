@@ -18,7 +18,7 @@ export function defaultGameState(): GameState {
     aiHintsUsed: 0,
     initialTimeSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     timeRemainingSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
-    score: 0,
+    score: GAME_CONSTANTS.INITIAL_SCORE,
     solvedPuzzleIds: [],
     collectedObjectIds: [],
     usedObjectIds: [],

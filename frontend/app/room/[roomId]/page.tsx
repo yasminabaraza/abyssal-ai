@@ -9,15 +9,21 @@ import SaveIndicator from "@/components/room/SaveIndicator/SaveIndicator";
 import TimeExpiredGuard from "@/components/room/TimeExpiredGuard/TimeExpiredGuard";
 import { GameProvider } from "@/context/GameContext";
 import useRoom from "@/hooks/useRoom";
+import useGameTimer from "@/hooks/useGameTimer";
 import type { InteractiveObject } from "@/types/game";
 import useAmbientSound from "@/hooks/useAmbientSound";
+
+const GameTimerController = ({ gameId }: { gameId: number }) => {
+  useGameTimer(gameId);
+  return null;
+};
 
 export default function RoomPage() {
   const { room, objects, gameId, gameState, isLoading } = useRoom();
   const [selectedObject, setSelectedObject] =
     useState<InteractiveObject | null>(null);
 
-  //Introducció so ambient
+  // Introducció so ambient
   useAmbientSound();
 
   if (isLoading) {
@@ -37,6 +43,8 @@ export default function RoomPage() {
       gameId={gameId}
       initialTimeRemainingSeconds={gameState.timeRemainingSeconds}
     >
+      <GameTimerController gameId={gameId} />
+
       <main className="min-h-screen flex flex-col bg-[#030d14] text-cyan-400">
         <Navbar />
 
@@ -61,7 +69,7 @@ export default function RoomPage() {
 
         <AssistantPanel room={room} gameId={gameId} />
 
-        <TimeExpiredGuard gameId={gameId} />
+        <TimeExpiredGuard />
       </main>
     </GameProvider>
   );

@@ -16,6 +16,7 @@ export function defaultGameState(): GameState {
   return {
     hintsUsed: 0,
     aiHintsUsed: 0,
+    initialTimeSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     timeRemainingSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     score: 0,
     solvedPuzzleIds: [],
@@ -44,6 +45,7 @@ export function isValidGameState(x: unknown): x is GameState {
     typeof s === "object" &&
     typeof s.hintsUsed === "number" &&
     typeof s.timeRemainingSeconds === "number" &&
+    typeof s.initialTimeSeconds === "number" &&
     typeof s.score === "number" &&
     Array.isArray(s.solvedPuzzleIds) &&
     Array.isArray(s.collectedObjectIds) &&

@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client";
+import { prisma } from "../db/prisma";
 import { GameStatus } from "@prisma/client";
 
 export const rankingRepository = {

@@ -1,6 +1,6 @@
+import { GAME_CONSTANTS } from "../constants/game.constants";
 import { gameActionRepository } from "../repositories/gameAction.repository";
-
-const TOTAL_TIME_SECONDS = 60 * 60;
+import { GameState } from "../types/game";
 
 export type Rank = "Recruit" | "Operative" | "Elite";
 
@@ -68,22 +68,24 @@ export const getUserStatsUseCase = async (
   let gamesWithState = 0;
 
   for (const game of games) {
-    const state = game.state as Record<string, unknown> | null;
+    const state = game.state as GameState | null;
     if (!state) continue;
 
     gamesWithState++;
 
-    const score = typeof state.score === "number" ? state.score : 0;
-    const hints = typeof state.hintsUsed === "number" ? state.hintsUsed : 0;
-    const timeRemaining =
-      typeof state.timeRemainingSeconds === "number"
-        ? state.timeRemainingSeconds
-        : TOTAL_TIME_SECONDS;
+    const score = state.score;
+    const hints = state.hintsUsed;
+    const timeRemaining = state.timeRemainingSeconds;
+
+    const initialTime =
+      typeof state.initialTimeSeconds === "number"
+        ? state.initialTimeSeconds
+        : GAME_CONSTANTS.INITIAL_TIME_SECONDS;
 
     totalScore += score;
     if (score > maxScore) maxScore = score;
     totalHintsUsed += hints;
-    totalTimeUsedSeconds += TOTAL_TIME_SECONDS - timeRemaining;
+    totalTimeUsedSeconds += initialTime - timeRemaining;
   }
 
   const avgScore =

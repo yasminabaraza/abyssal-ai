@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import useGameTimer from "@/hooks/useGameTimer";
+import { useGameContext } from "@/context/GameContext";
 import { PATHS } from "@/constants/paths";
 import { AudioManager } from "@/utils/AudioManager";
 
@@ -12,14 +12,14 @@ import { AudioManager } from "@/utils/AudioManager";
  * - mostra un overlay d'alarma amb compte enrere (5→1);
  * - al final del compte enrere, força el redirect a /game-over.
  */
-type TimeExpiredGuardProps = {
-  gameId: number;
-};
 
 const COUNTDOWN_FROM_SECONDS = 5;
 
-const TimeExpiredGuard = ({ gameId }: TimeExpiredGuardProps) => {
-  const { isExpired } = useGameTimer(gameId);
+const TimeExpiredGuard = () => {
+  const { timeRemainingSeconds } = useGameContext();
+
+  const isExpired = timeRemainingSeconds <= 0;
+
   const router = useRouter();
   const triggeredRef = useRef(false);
   const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_FROM_SECONDS);
@@ -32,12 +32,17 @@ const TimeExpiredGuard = ({ gameId }: TimeExpiredGuardProps) => {
 
   useEffect(() => {
     if (!isExpired || secondsLeft <= 0) return;
-    const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+
+    const timer = setTimeout(() => {
+      setSecondsLeft((s) => s - 1);
+    }, 1000);
+
     return () => clearTimeout(timer);
   }, [isExpired, secondsLeft]);
 
   useEffect(() => {
     if (!isExpired || secondsLeft > 0) return;
+
     router.replace(PATHS.GAME_OVER);
   }, [isExpired, secondsLeft, router]);
 
@@ -74,6 +79,7 @@ const TimeExpiredGuard = ({ gameId }: TimeExpiredGuardProps) => {
           {Math.max(0, secondsLeft)}
         </div>
       </div>
+
       <style>{`
         @keyframes timeExpiredCountdown {
           0%   { transform: scale(1.4); opacity: 0.15; }

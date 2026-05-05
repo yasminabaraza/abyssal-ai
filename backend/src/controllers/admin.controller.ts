@@ -129,6 +129,21 @@ export async function adminListRooms(req: Request, res: Response) {
     return res.status(500).json({ message: "Error llistant sales" });
   }
 }
+export async function adminGetRoom(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    if (!id || Number.isNaN(id)) {
+      return res.status(400).json({ message: "ID de sala invàlid" });
+    }
+    const room = await prisma.room.findUnique({ where: { id } });
+    if (!room) {
+      return res.status(404).json({ message: "Sala no trobada" });
+    }
+    return res.status(200).json({ room });
+  } catch {
+    return res.status(500).json({ message: "Error obtenint sala" });
+  }
+}
 export async function adminUpdateRoom(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
@@ -148,6 +163,10 @@ export async function adminListPuzzles(req: Request, res: Response) {
   try {
     const puzzles = await prisma.puzzle.findMany({
       orderBy: { id: "asc" },
+      include: {
+        room: { select: { id: true, name: true, order: true } },
+        hints: { orderBy: { order: "asc" } },
+      },
     });
 
     return res.status(200).json({ puzzles });

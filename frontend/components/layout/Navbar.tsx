@@ -31,7 +31,7 @@ const ALL_ROOMS = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
   const { data: activeGameData } = useActiveGame();
 
   const activeGame =
@@ -64,14 +64,19 @@ export default function Navbar() {
       { label: "Instruccions", href: PATHS.INSTRUCCIONS },
       { label: "Rànquing", href: "/ranking" },
       { label: "Perfil", href: PATHS.PROFILE },
-      {
-        label: "Logout",
-        onClick: () => {
-          logout();
-          router.push(PATHS.HOME);
-        },
-      },
     );
+
+    if (user?.role === "admin") {
+      routesToRender.push({ label: "Admin", href: PATHS.ADMIN });
+    }
+
+    routesToRender.push({
+      label: "Logout",
+      onClick: () => {
+        logout();
+        router.push(PATHS.HOME);
+      },
+    });
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useQueryClient } from "@tanstack/react-query";
 
 /** Dades de l'usuari autenticat extretes del JWT */
 type AuthUser = {
@@ -65,6 +66,7 @@ const getInitialUser = (): AuthUser | null => {
  */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const initialUser = getInitialUser();
@@ -87,6 +89,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("token");
     document.cookie = "auth-token=; path=/; max-age=0";
     setUser(null);
+    queryClient.clear();
   };
 
   return (

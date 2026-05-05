@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client";
+import { prisma } from "../db/prisma";
 import { GameStatus, GameEndReason } from "@prisma/client";
 
 type GameState = {

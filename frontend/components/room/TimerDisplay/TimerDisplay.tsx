@@ -1,7 +1,16 @@
-import useGameTimer from "@/hooks/useGameTimer";
+import { useGameContext } from "@/context/GameContext";
 
-const TimerDisplay = ({ gameId }: { gameId: number }) => {
-  const { formattedTime, timeRemaining, isExpired } = useGameTimer(gameId);
+const TimerDisplay = () => {
+  const { timeRemainingSeconds } = useGameContext();
+
+  const timeRemaining = timeRemainingSeconds;
+
+  const isExpired = timeRemaining <= 0;
+
+  const minutes = Math.floor(timeRemaining / 60);
+  const seconds = timeRemaining % 60;
+
+  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
   // Determine the color class based on the time remaining
   const isWarning = timeRemaining < 300; // < 5 min

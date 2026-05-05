@@ -17,6 +17,7 @@ export type GameState = {
   hintsUsed: number;
   // Comptador global de consultes a l'assistent ABYSS AI
   aiHintsUsed: number;
+  initialTimeSeconds: number;
   timeRemainingSeconds: number;
   score: number;
   solvedPuzzleIds: number[];

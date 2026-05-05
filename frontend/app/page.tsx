@@ -31,7 +31,7 @@ export default function LandingPage() {
   };
 
   return (
-    <main className="min-h-screen text-cyan-50 font-mono flex flex-col items-center selection:bg-cyan-950 overflow-hidden relative">
+    <main className="min-h-screen text-cyan-50 font-mono flex flex-col items-center selection:bg-cyan-950 relative">
       <Navbar />
 
       {/* Contingut principal */}

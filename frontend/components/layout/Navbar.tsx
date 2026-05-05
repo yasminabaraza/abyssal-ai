@@ -81,9 +81,12 @@ export default function Navbar() {
 
   return (
     <nav className="w-full max-w-7xl mx-auto flex justify-between items-center p-6 z-50">
-      <div className="text-xl font-bold tracking-tighter text-cyan-400">
+      <Link
+        href={PATHS.HOME}
+        className="text-xl font-bold tracking-tighter text-cyan-400 hover:text-cyan-200"
+      >
         ABYSS AI
-      </div>
+      </Link>
       <div className="flex gap-8 text-[10px] tracking-[0.3em] text-cyan-800 uppercase font-bold">
         {routesToRender.map((route) =>
           route.dropdown ? (

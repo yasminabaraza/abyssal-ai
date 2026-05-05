@@ -95,12 +95,13 @@ export type SolveEnigmaRequest = {
 
 export type SolveEnigmaResponse = {
   correct: boolean;
-  message: string;
+  message?: string;
   gameOver?: boolean;
   endReason?: GameEndReason;
   nextRoom?: Room;
-  // El backend només inclou `game` quan la resposta és correcta (retorna el
-  // game avançat). Quan és incorrecta, retorna només l'`state` actualitzat.
+  // El backend inclou `game` quan la resposta és correcta (game avançat) o
+  // quan la partida acaba per intents esgotats (game tancat). Quan és
+  // incorrecta i el joc continua, retorna només l'`state` actualitzat.
   game?: Game;
   state?: GameState;
 };

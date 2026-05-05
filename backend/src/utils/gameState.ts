@@ -16,11 +16,8 @@ export function defaultGameState(): GameState {
   return {
     hintsUsed: 0,
     aiHintsUsed: 0,
-<<<<<<< feature/attempts-exceeded
     attemptsUsed: 0,
-=======
     initialTimeSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
->>>>>>> main
     timeRemainingSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     score: GAME_CONSTANTS.INITIAL_SCORE,
     solvedPuzzleIds: [],

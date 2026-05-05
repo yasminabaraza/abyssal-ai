@@ -42,10 +42,10 @@ export const INSTRUCTIONS_COPY = {
     " AVÍS DE MISSIÓ: L'estació està en quarantena. Tens temps limitat per sala. No cometis errors.",
 
   controls: [
-    "Clic esquerre sobre un objecte  → Examinar",
-    "Camp de text + ENTER → Enviar resposta",
-    "Icona de disc + Guardar → Progrés manual",
-    "ESC Menu principal(la partida es desa) → Sortir",
+    { key: "Clic esquerre", action: "Examinar objecte" },
+    { key: "ENTER", action: "Enviar resposta" },
+    { key: "Icona disc", action: "Desar progrés manual" },
+    { key: "ESC", action: "Menú principal (es desa la partida)" },
   ],
 
   cta: {

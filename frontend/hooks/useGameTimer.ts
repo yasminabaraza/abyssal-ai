@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useGameContext } from "@/context/GameContext";
 import { socket } from "@/services/socket";
 
@@ -8,11 +8,15 @@ import { socket } from "@/services/socket";
  * Timer controlado por backend via Socket.IO.
  * Si el socket se reconecta, vuelve a unirse automáticamente a la partida.
  */
+
+// Variable singleton a nivell de mòdul
+let timerSubscribed = false;
 const useGameTimer = (gameId?: number) => {
   const { timeRemainingSeconds, setTimeRemaining } = useGameContext();
 
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameId || timerSubscribed) return;
+    timerSubscribed = true;
 
     const joinTimerRoom = () => {
       socket.emit("timer:join", { gameId });
@@ -45,6 +49,7 @@ const useGameTimer = (gameId?: number) => {
       socket.off("connect", handleConnect);
       socket.off("timer:update", handleUpdate);
       socket.off("timer:ended", handleEnded);
+      timerSubscribed = false;
     };
   }, [gameId, setTimeRemaining]);
 

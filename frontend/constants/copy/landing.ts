@@ -27,8 +27,8 @@ export const LANDING_COPY = {
 
   stats: [
     { value: "3", label: "Sales", accent: false },
-    { value: "7", label: "Enigmes", accent: false },
-    { value: "~45'", label: "Durada Est.", accent: true },
+    { value: "3", label: "Enigmes", accent: false },
+    { value: "~30'", label: "Durada Est.", accent: true },
     { value: "∞", label: "Misteri", accent: false },
   ],
 } as const;

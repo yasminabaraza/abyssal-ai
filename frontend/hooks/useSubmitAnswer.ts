@@ -24,10 +24,13 @@ const useSubmitAnswer = () => {
   >({
     mutationFn: ({ gameId, answer }) => submitAnswer(gameId, answer),
     onSuccess: (data) => {
-      // Nou cas: el backend diu que el joc ha acabat
-      if (data.gameOver) {
-        // No toquem la cache: el joc ja està tancat
-        // El component decidirà què mostrar
+      // Si el joc ha acabat, el backend retorna el game tancat. Sincronitzem
+      // la cache perquè useRoom detecti status != active i redirigeixi a
+      // /game-over.
+      if (data.gameOver && data.game) {
+        queryClient.setQueryData<GameResponse>(["activeGame"], {
+          game: data.game,
+        });
         return;
       }
 

@@ -37,14 +37,14 @@ export default function LandingPage() {
       {/* Contingut principal */}
       <div className="flex-1 flex flex-col items-center justify-center text-center z-10 px-6 max-w-4xl">
         {/* Localització superior */}
-        <div className="text-[10px] tracking-[0.6em] text-cyan-900 mb-4 flex items-center gap-4">
+        <div className="text-[10px] tracking-[0.6em] text-cyan-900 mb-2 flex items-center gap-4">
           <div className="h-px w-12 bg-cyan-900" />
           {LANDING_COPY.location}
           <div className="h-px w-12 bg-cyan-900" />
         </div>
 
         {/* Títol principal */}
-        <div className="mb-4">
+        <div className="mb-2">
           <h1 className="text-7xl md:text-9xl font-black tracking-widest leading-none mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)]">
             {LANDING_COPY.title}
           </h1>
@@ -54,12 +54,12 @@ export default function LandingPage() {
         </div>
 
         {/* Subtítol */}
-        <h2 className="text-xs md:text-sm tracking-[0.4em] text-cyan-600 uppercase mb-8">
+        <h2 className="text-xs md:text-sm tracking-[0.4em] text-cyan-600 uppercase mb-6">
           {LANDING_COPY.subtitle}
         </h2>
 
         {/* Text narratiu */}
-        <div className="space-y-6 text-cyan-800 text-[13px] leading-relaxed max-w-2xl font-light">
+        <div className="space-y-3 text-cyan-800 text-[13px] leading-relaxed max-w-2xl font-light">
           {LANDING_COPY.narrative.map((p, i) => (
             <p key={i}>
               {p.before}
@@ -78,7 +78,7 @@ export default function LandingPage() {
         </div>
 
         {/* Botons d'acció */}
-        <div className="mt-10 mb-10 flex flex-col items-center gap-6 w-full">
+        <div className="mt-6 mb-6 flex flex-col items-center gap-4 w-full">
           {isAuthenticated ? (
             <button
               onClick={handlePrimaryAction}
@@ -117,7 +117,7 @@ export default function LandingPage() {
         </div>
       </div>
       {/* Footer stats */}
-      <footer className="w-full max-w-5xl grid grid-cols-4 border-t border-cyan-900/30 p-10 z-10">
+      <footer className="w-full max-w-5xl grid grid-cols-4 border-t border-cyan-900/30 p-6 z-10">
         {LANDING_COPY.stats.map((stat, i) => (
           <div
             key={stat.label}

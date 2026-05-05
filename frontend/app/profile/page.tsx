@@ -33,7 +33,7 @@ const describeGame = (g: RecentGame): string => {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { logout, user: authUser } = useAuth();
+  const { user: authUser } = useAuth();
   const { data: activeGameData } = useActiveGame();
   const { data: profileData, isLoading } = useMyProfile();
 
@@ -218,19 +218,19 @@ export default function ProfilePage() {
 
               {activeGame && (
                 <button
-                  className="btn-primary w-full mt-4"
+                  className="mt-4 px-6 py-2 border border-cyan-400 text-cyan-400 text-xs uppercase tracking-[0.3em] hover:bg-cyan-400 hover:text-black transition-all w-full"
                   onClick={() =>
                     router.push(
                       `${PATHS.ROOM}/${formatRoomUrl(activeGame.currentRoom.order)}`,
                     )
                   }
                 >
-                  {" "}
                   ▶ CONTINUAR PARTIDA
                 </button>
               )}
             </div>
 
+            {/*
             <div className="flex flex-col gap-2">
               <button
                 className="btn-secondary w-full"
@@ -248,7 +248,7 @@ export default function ProfilePage() {
               >
                 Tancar sessió
               </button>
-            </div>
+             </div>*/}
           </div>
 
           {/* Right Panel */}

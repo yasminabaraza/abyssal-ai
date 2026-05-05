@@ -49,6 +49,24 @@ export default function InstructionsPage() {
             )}
           </div>
 
+          {/* ABYSS AI */}
+          <div className="border border-cyan-500/30 bg-cyan-950/30 p-6 mb-8 relative">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <h3 className="text-cyan-300 font-bold tracking-widest text-sm">
+                {INSTRUCTIONS_COPY.ai.title}
+              </h3>
+            </div>
+            <p className="text-cyan-700 text-sm leading-relaxed mb-3">
+              {INSTRUCTIONS_COPY.ai.description}
+            </p>
+            <ul className="text-cyan-700 text-sm space-y-1 list-disc list-inside marker:text-cyan-500">
+              {INSTRUCTIONS_COPY.ai.bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+          </div>
+
           {/* ALERT */}
           <div className="border-l-2 border-yellow-500 p-4 text-yellow-400 text-sm mb-8">
             {INSTRUCTIONS_COPY.alert}
@@ -71,8 +89,7 @@ export default function InstructionsPage() {
             >
               {INSTRUCTIONS_COPY.cta.secondary}
             </button>
-
-            </div>
+          </div>
         </div>
       </div>
     </main>

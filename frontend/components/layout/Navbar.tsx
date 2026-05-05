@@ -80,67 +80,72 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full max-w-7xl mx-auto flex justify-between items-center p-6 z-50">
-      <div className="text-xl font-bold tracking-tighter text-cyan-400">
-        ABYSS AI
-      </div>
-      <div className="flex gap-8 text-[10px] tracking-[0.3em] text-cyan-800 uppercase font-bold">
-        {routesToRender.map((route) =>
-          route.dropdown ? (
-            <div key={route.label} className="relative group">
-              <span className="cursor-pointer hover:text-cyan-400">
-                {route.label}
-              </span>
-              {/* Wrapper amb padding-top perquè el gap entre el label i el menú
+    <nav className="sticky top-0 w-full z-50 backdrop-blur-sm bg-slate-950/70">
+      <div className="max-w-7xl mx-auto flex justify-between items-center p-6">
+        <Link
+          href={PATHS.HOME}
+          className="text-xl font-bold tracking-tighter text-cyan-400 hover:text-cyan-200"
+        >
+          ABYSS AI
+        </Link>
+        <div className="flex gap-8 text-[10px] tracking-[0.3em] text-cyan-800 uppercase font-bold">
+          {routesToRender.map((route) =>
+            route.dropdown ? (
+              <div key={route.label} className="relative group">
+                <span className="cursor-pointer hover:text-cyan-400">
+                  {route.label}
+                </span>
+                {/* Wrapper amb padding-top perquè el gap entre el label i el menú
                   segueixi sent part del hover (evita que el popup es tanqui
                   en moure el cursor des de SALES cap al dropdown). */}
-              <div className="absolute left-0 top-full hidden group-hover:block pt-2 z-50">
-                <div className="flex flex-col bg-cyan-950 border border-cyan-500/30 p-2">
-                  {route.dropdown.map((item) =>
-                    item.disabled ? (
-                      <span
-                        key={item.href}
-                        aria-disabled="true"
-                        className="text-cyan-800/60 text-sm py-1 cursor-not-allowed line-through"
-                      >
-                        {item.label}
-                      </span>
-                    ) : (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="text-cyan-400 text-sm py-1 hover:text-cyan-200"
-                      >
-                        {item.label}
-                      </Link>
-                    ),
-                  )}
+                <div className="absolute left-0 top-full hidden group-hover:block pt-2 z-50">
+                  <div className="flex flex-col bg-cyan-950 border border-cyan-500/30 p-2">
+                    {route.dropdown.map((item) =>
+                      item.disabled ? (
+                        <span
+                          key={item.href}
+                          aria-disabled="true"
+                          className="text-cyan-800/60 text-sm py-1 cursor-not-allowed line-through"
+                        >
+                          {item.label}
+                        </span>
+                      ) : (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="text-cyan-400 text-sm py-1 hover:text-cyan-200"
+                        >
+                          {item.label}
+                        </Link>
+                      ),
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : route.href ? (
-            <Link
-              key={route.label}
-              href={route.href}
-              className={`cursor-pointer ${
-                pathname === route.href
-                  ? "text-cyan-400 border-b border-cyan-400 pb-1"
-                  : "hover:text-cyan-400"
-              }`}
-            >
-              {route.label}
-            </Link>
-          ) : (
-            <button
-              key={route.label}
-              type="button"
-              onClick={route.onClick}
-              className="cursor-pointer hover:text-cyan-400 tracking-[0.3em] uppercase font-bold"
-            >
-              {route.label}
-            </button>
-          ),
-        )}
+            ) : route.href ? (
+              <Link
+                key={route.label}
+                href={route.href}
+                className={`cursor-pointer ${
+                  pathname === route.href
+                    ? "text-cyan-400 border-b border-cyan-400 pb-1"
+                    : "hover:text-cyan-400"
+                }`}
+              >
+                {route.label}
+              </Link>
+            ) : (
+              <button
+                key={route.label}
+                type="button"
+                onClick={route.onClick}
+                className="cursor-pointer hover:text-cyan-400 tracking-[0.3em] uppercase font-bold"
+              >
+                {route.label}
+              </button>
+            ),
+          )}
+        </div>
       </div>
     </nav>
   );

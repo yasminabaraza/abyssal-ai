@@ -26,17 +26,29 @@ export const INSTRUCTIONS_COPY = {
     },
   ],
 
+  ai: {
+    title: "ABYSS AI — ASSISTENT D'EMERGÈNCIA",
+    description:
+      "Si et quedes encallat, pots demanar pista al terminal de l'Abyss AI (panell flotant a la sala). Cada consulta consumeix una de les pistes disponibles per la sala.",
+    bullets: [
+      "Clica el terminal ABYSS AI per obrir el xat amb l'assistent.",
+      "Les pistes són limitades per sala — usa-les amb criteri.",
+      "L'estat (ONLINE / PROCESSANT / OFFLINE) indica si pots consultar.",
+      "Si la quota s'esgota, podràs veure el log però no demanar més pistes.",
+    ],
+  },
+
   alert:
     " AVÍS DE MISSIÓ: L'estació està en quarantena. Tens temps limitat per sala. No cometis errors.",
 
   controls: [
-    "Clic esquerre sobre un objecte  → Examinar",
-    "Camp de text + ENTER → Enviar resposta",
-    "Icona de disc + Guardar → Progrés manual",
-    "ESC Menu principal(la partida es desa) → Sortir",
+    { key: "Clic esquerre", action: "Examinar objecte" },
+    { key: "ENTER", action: "Enviar resposta" },
+    { key: "Icona disc", action: "Desar progrés manual" },
+    { key: "ESC", action: "Menú principal (es desa la partida)" },
   ],
 
   cta: {
-      secondary: "Tornar a l'inici",
+    secondary: "Tornar a l'inici",
   },
 };

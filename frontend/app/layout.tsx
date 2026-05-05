@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import React from "react";
 import FloatingDust from "@/components/effects/FloatingDust/FloatingDust";
+import JellyfishLayer from "@/components/effects/Jellyfish/JellyfishLayer";
 import QueryProvider from "@/providers/QueryProvider";
 import { AuthProvider } from "@/context/AuthContext";
 
@@ -50,6 +51,8 @@ export default function RootLayout({
           </svg>
           {/* Partículas flotantes */}
           <FloatingDust />
+          {/* Meduses bioluminiscents */}
+          <JellyfishLayer />
         </div>
 
         {/* El contenido de las páginas con un z-index para que esté por encima de los efectos */}

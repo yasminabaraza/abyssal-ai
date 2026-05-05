@@ -1,13 +1,17 @@
 "use client";
 
+import EndingHero from "@/components/game-over/Endinghero";
+import RoomsProgress from "@/components/game-over/RoomsProgress";
+import StatCard from "@/components/game-over/StatCard";
 import Navbar from "@/components/layout/Navbar";
-import { GAME_CONSTANTS } from "@/constants/game";
 import { PATHS } from "@/constants/paths";
+import { useGameSummary } from "@/hooks/useGameSummary";
 import useLastGame from "@/hooks/useLastGame";
 import useStartGame from "@/hooks/useStartGame";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useGameSound } from "@/hooks/useGameSound";
 
 function formatRoomUrl(order: number): string {
   return String(order).padStart(2, "0");
@@ -28,40 +32,11 @@ export default function GameOverPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const game = data?.game ?? null;
-  const status = game?.status ?? null;
-  const state = game?.state ?? null;
 
-  const endReason = game?.endReason ?? null;
+  const summary = useGameSummary(game);
 
-  const isCompleted = status === "completed";
-  const isEnded = status === "ended";
-
-  const isTimeExpired = isEnded && endReason === "timeExpired";
-  const isAttemptsExceeded = isEnded && endReason === "attemptsExceeded";
-
-  const timeUsedSeconds = state
-    ? Math.max(
-        0,
-        GAME_CONSTANTS.INITIAL_TIME_SECONDS - state.timeRemainingSeconds,
-      )
-    : 0;
-  const score = state?.score ?? 0;
-
-  const title = isCompleted
-    ? "MISSIÓ COMPLETADA"
-    : isEnded
-      ? "MISSIÓ FALLIDA"
-      : "PARTIDA FINALITZADA";
-
-  const subtitle = isCompleted
-    ? "Has desactivat la quarantena i recuperat el contacte amb la superfície."
-    : isEnded
-      ? isTimeExpired
-        ? "Temps esgotat. L'Abyss AI ha segellat els compartiments."
-        : isAttemptsExceeded
-          ? "Has superat el nombre màxim d'intents. L'Abyss AI ha blocat el sistema."
-          : "Has abandonat la missió abans d'hora. L'Abyss AI manté els compartiments segellats."
-      : "";
+  // Reprodueix el so de final una sola vegada quan tenim el resultat
+  useGameSound(summary?.endingKey ?? null);
 
   const handleNewMission = () => {
     if (startGame.isPending) return;
@@ -85,16 +60,16 @@ export default function GameOverPage() {
     <main className="min-h-screen flex flex-col bg-[#030d14] text-cyan-400 font-mono">
       <Navbar />
 
-      <div className="flex-1 flex items-center justify-center px-6">
-        {isLoading ? (
-          <div className="animate-pulse tracking-widest text-sm">
-            CARREGANT RESUM...
+      <div className="flex-1 flex items-start justify-center px-4 py-10">
+        {isLoading && (
+          <div className="animate-pulse tracking-widest text-sm mt-24 text-cyan-800">
+            CARREGANT INFORME FINAL...
           </div>
-        ) : !game ? (
-          <div className="flex flex-col items-center gap-4 max-w-md text-center">
-            <p className="text-sm text-cyan-600 tracking-widest">
-              {/*Text dins string JS per evitar la regla ESLint react/no-unescaped-entities (apòstrofs en JSX literal)
-               */}
+        )}
+
+        {!isLoading && (!game || !summary) && (
+          <div className="flex flex-col items-center gap-5 max-w-md text-center mt-24">
+            <p className="text-[10px] text-cyan-800 tracking-[0.4em] uppercase">
               {"No s'ha trobat cap partida finalitzada."}
             </p>
             <button
@@ -105,42 +80,65 @@ export default function GameOverPage() {
               {startGame.isPending ? "▶ CREANT MISSIÓ..." : "▶ NOVA MISSIÓ"}
             </button>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-8 max-w-xl text-center">
-            <div className="text-[10px] tracking-[0.6em] text-cyan-800 uppercase">
-              INFORME FINAL
-            </div>
-            <h1
-              className={`text-4xl md:text-5xl font-black tracking-[0.3em] ${
-                isCompleted ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-sm text-cyan-600 leading-relaxed max-w-md">
-                {subtitle}
-              </p>
-            )}
+        )}
 
-            <dl className="grid grid-cols-2 gap-6 w-full max-w-md border-t border-b border-cyan-900/40 py-8">
-              <div className="flex flex-col items-center">
-                <dt className="text-[9px] tracking-[0.4em] text-cyan-800 uppercase mb-2">
-                  Temps utilitzat
-                </dt>
-                <dd className="text-3xl font-black text-cyan-200">
-                  {formatTime(timeUsedSeconds)}
-                </dd>
-              </div>
-              <div className="flex flex-col items-center">
-                <dt className="text-[9px] tracking-[0.4em] text-cyan-800 uppercase mb-2">
-                  Puntuació
-                </dt>
-                <dd className="text-3xl font-black text-cyan-200">{score}</dd>
-              </div>
+        {!isLoading && game && summary && (
+          <div className="w-full max-w-xl flex flex-col gap-8">
+            {/* 1. Narrativa del final */}
+            <EndingHero copy={summary.copy} />
+
+            {/* 2. Mètriques */}
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <StatCard
+                label="Temps usat"
+                value={formatTime(summary.timeUsedSeconds)}
+                icon="⏱"
+              />
+              <StatCard
+                label="Puntuació"
+                value={summary.score.toLocaleString("ca")}
+                variant={
+                  summary.endingKey === "completed" ? "success" : "default"
+                }
+                icon="◈"
+              />
+              <StatCard
+                label="Pistes usades"
+                value={summary.hintsUsed}
+                variant={
+                  summary.hintsUsed === 0
+                    ? "muted"
+                    : summary.hintsUsed >= 3
+                      ? "danger"
+                      : "warning"
+                }
+                subtext={summary.hintsUsed === 0 ? "cap pista" : undefined}
+                icon="◆"
+              />
+              <StatCard
+                label="Sales resoltes"
+                value={`${summary.solvedRoomsCount} / ${summary.totalRooms}`}
+                variant={
+                  summary.solvedRoomsCount === summary.totalRooms
+                    ? "success"
+                    : summary.solvedRoomsCount === 0
+                      ? "danger"
+                      : "default"
+                }
+                icon="▣"
+              />
             </dl>
 
-            <div className="flex flex-col items-center gap-4 w-full">
+            {/* 3. Progrés per sala */}
+            <RoomsProgress
+              solvedCount={summary.solvedRoomsCount}
+              totalRooms={summary.totalRooms}
+            />
+
+            <hr className="border-cyan-900/20" />
+
+            {/* 4. Accions */}
+            <div className="flex flex-col items-center gap-4 pb-4">
               <button
                 onClick={handleNewMission}
                 disabled={startGame.isPending}

@@ -163,6 +163,10 @@ export async function adminListPuzzles(req: Request, res: Response) {
   try {
     const puzzles = await prisma.puzzle.findMany({
       orderBy: { id: "asc" },
+      include: {
+        room: { select: { id: true, name: true, order: true } },
+        hints: { orderBy: { order: "asc" } },
+      },
     });
 
     return res.status(200).json({ puzzles });

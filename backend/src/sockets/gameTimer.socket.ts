@@ -4,6 +4,8 @@ import {
   persistGameTimer,
 } from "../services/timer.service";
 
+const PERSIST_INTERVAL_MS = 15000;
+
 export function registerGameTimerSocket(io: Server) {
   io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
@@ -40,37 +42,51 @@ export function registerGameTimerSocket(io: Server) {
 
         const timer = await getUpdatedGameTimer(numericGameId);
 
-        currentTimeRemainingSeconds = timer.timeRemainingSeconds;
-        let lastPersistedAt = Date.now();
+        // Ancorem el càlcul al rellotge real per evitar deriva del setInterval.
+        // Cada tick recalcula `remaining` a partir del temps real transcorregut
+        // des de l'arrencada, no acumulant -1 per tick (que es desfasa amb GC,
+        // event loop bloquejat, awaits a la BD, etc.).
+        const tickStartedAtMs = Date.now();
+        const tickStartRemainingSeconds = timer.timeRemainingSeconds;
+        currentTimeRemainingSeconds = tickStartRemainingSeconds;
+        let lastPersistedAtMs = tickStartedAtMs;
 
         socket.emit("timer:update", {
           gameId: numericGameId,
           timeRemainingSeconds: currentTimeRemainingSeconds,
         });
 
-        currentInterval = setInterval(async () => {
-          if (currentTimeRemainingSeconds === null) return;
-
-          currentTimeRemainingSeconds = Math.max(
-            0,
-            currentTimeRemainingSeconds - 1,
+        currentInterval = setInterval(() => {
+          const elapsedSeconds = Math.floor(
+            (Date.now() - tickStartedAtMs) / 1000,
           );
+          const nextRemaining = Math.max(
+            0,
+            tickStartRemainingSeconds - elapsedSeconds,
+          );
+
+          currentTimeRemainingSeconds = nextRemaining;
 
           io.to(`game:${numericGameId}`).emit("timer:update", {
             gameId: numericGameId,
-            timeRemainingSeconds: currentTimeRemainingSeconds,
+            timeRemainingSeconds: nextRemaining,
           });
 
           const shouldPersist =
-            Date.now() - lastPersistedAt >= 15000 ||
-            currentTimeRemainingSeconds === 0;
+            Date.now() - lastPersistedAtMs >= PERSIST_INTERVAL_MS ||
+            nextRemaining === 0;
 
           if (shouldPersist) {
-            await persistGameTimer(numericGameId, currentTimeRemainingSeconds);
-            lastPersistedAt = Date.now();
+            lastPersistedAtMs = Date.now();
+            // Fire-and-forget: l'await dins del tick endarreria la cadència
+            // i feia perdre precisió. Si falla, només impacta la persistència
+            // periòdica; el següent tick o el clearCurrentTimer ho reintentaran.
+            persistGameTimer(numericGameId, nextRemaining).catch((err) => {
+              console.error("persistGameTimer failed:", err);
+            });
           }
 
-          if (currentTimeRemainingSeconds === 0) {
+          if (nextRemaining === 0) {
             io.to(`game:${numericGameId}`).emit("timer:ended", {
               gameId: numericGameId,
               reason: "timeExpired",

@@ -38,6 +38,7 @@ export function useGameSummary(game: Game | null): GameSummaryData | null {
     : 0;
 
   const score = state?.score ?? 0;
+  // state.hintsUsed = pistes utilitzades a l'ÚLTIMA SALA, NO total de la partida
   const hintsUsed = state?.hintsUsed ?? 0;
   const solvedPuzzleIds = state?.solvedPuzzleIds ?? [];
   const solvedRoomsCount = solvedPuzzleIds.length;

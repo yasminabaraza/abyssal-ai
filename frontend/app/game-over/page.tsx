@@ -102,8 +102,9 @@ export default function GameOverPage() {
                 }
                 icon="◈"
               />
+              {/* summary.hintsUsed indica les pistes utilitzades a l’última sala, no el total de la partida */}
               <StatCard
-                label="Pistes usades"
+                label="Pistes utilitzades a l’última sala"
                 value={summary.hintsUsed}
                 variant={
                   summary.hintsUsed === 0

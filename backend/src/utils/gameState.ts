@@ -16,6 +16,7 @@ export function defaultGameState(): GameState {
   return {
     hintsUsed: 0,
     aiHintsUsed: 0,
+    attemptsUsed: 0,
     initialTimeSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     timeRemainingSeconds: GAME_CONSTANTS.INITIAL_TIME_SECONDS,
     score: GAME_CONSTANTS.INITIAL_SCORE,
@@ -39,8 +40,8 @@ export function defaultGameState(): GameState {
  * - Es valida només l'estructura (shape), no la coherència semàntica.
  */
 export function isValidGameState(x: unknown): x is GameState {
-  const s = x as any;
-  return (
+  const s = x as Partial<GameState> | null;
+  return Boolean(
     s &&
     typeof s === "object" &&
     typeof s.hintsUsed === "number" &&
@@ -50,7 +51,7 @@ export function isValidGameState(x: unknown): x is GameState {
     Array.isArray(s.solvedPuzzleIds) &&
     Array.isArray(s.collectedObjectIds) &&
     Array.isArray(s.usedObjectIds) &&
-    Array.isArray(s.unlockedRoomIds)
+    Array.isArray(s.unlockedRoomIds),
   );
 }
 
@@ -64,7 +65,14 @@ export function isValidGameState(x: unknown): x is GameState {
  * amb un GameState coherent.
  */
 export function getStateOrDefault(x: unknown): GameState {
-  return isValidGameState(x) ? (x as GameState) : defaultGameState();
+  if (!isValidGameState(x)) return defaultGameState();
+  // Fallback per a partides preexistents al deploy d'attemptsUsed:
+  // el seu state JSON a BD encara no té el camp.
+  const attemptsUsed =
+    typeof (x as { attemptsUsed?: unknown }).attemptsUsed === "number"
+      ? (x as { attemptsUsed: number }).attemptsUsed
+      : 0;
+  return { ...x, attemptsUsed };
 }
 /**
  * Registra una interacció sobre un objecte dins de l'estat de partida.

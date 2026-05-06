@@ -10,6 +10,10 @@ export const GAME_CONSTANTS = {
   MAX_HINTS: 3,
   MAX_AI_HINTS: 6,
 
+  // Errades màximes permeses per enigma abans de tancar la partida
+  // (no compta la submissió correcta final).
+  MAX_ATTEMPTS: 3,
+
   // Puntuació
   INITIAL_SCORE: 500,
   SCORE_CORRECT_ANSWER: 200,

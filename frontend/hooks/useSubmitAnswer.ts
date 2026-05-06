@@ -24,6 +24,16 @@ const useSubmitAnswer = () => {
   >({
     mutationFn: ({ gameId, answer }) => submitAnswer(gameId, answer),
     onSuccess: (data) => {
+      // Si el joc ha acabat, el backend retorna el game tancat. Sincronitzem
+      // la cache perquè useRoom detecti status != active i redirigeixi a
+      // /game-over.
+      if (data.gameOver && data.game) {
+        queryClient.setQueryData<GameResponse>(["activeGame"], {
+          game: data.game,
+        });
+        return;
+      }
+
       if (data.correct) return;
       // En resposta incorrecta, el backend només retorna l'state actualitzat
       // (no el game sencer). Fusionem dins la cache existent per preservar

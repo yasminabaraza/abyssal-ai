@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useGameContext } from "@/context/GameContext";
 import { socket } from "@/services/socket";
 
@@ -8,25 +8,15 @@ import { socket } from "@/services/socket";
  * Timer controlado por backend via Socket.IO.
  * Si el socket se reconecta, vuelve a unirse automáticamente a la partida.
  */
-
-// Variable singleton a nivell de mòdul
-let timerSubscribed = false;
 const useGameTimer = (gameId?: number) => {
   const { timeRemainingSeconds, setTimeRemaining } = useGameContext();
 
   useEffect(() => {
-    if (!gameId || timerSubscribed) return;
-    timerSubscribed = true;
+    if (!gameId) return;
 
     const joinTimerRoom = () => {
       socket.emit("timer:join", { gameId });
     };
-
-    if (!socket.connected) {
-      socket.connect();
-    } else {
-      joinTimerRoom();
-    }
 
     const handleConnect = () => {
       joinTimerRoom();
@@ -44,17 +34,21 @@ const useGameTimer = (gameId?: number) => {
     socket.on("timer:update", handleUpdate);
     socket.on("timer:ended", handleEnded);
 
+    if (!socket.connected) {
+      socket.connect();
+    } else {
+      joinTimerRoom();
+    }
+
     return () => {
       socket.emit("timer:leave", { gameId });
       socket.off("connect", handleConnect);
       socket.off("timer:update", handleUpdate);
       socket.off("timer:ended", handleEnded);
-      timerSubscribed = false;
     };
   }, [gameId, setTimeRemaining]);
 
   const isExpired = timeRemainingSeconds <= 0;
-
   const minutes = Math.floor(timeRemainingSeconds / 60);
   const seconds = timeRemainingSeconds % 60;
 

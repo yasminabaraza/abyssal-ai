@@ -1,4 +1,6 @@
 "use client";
+
+import { useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { PATHS } from "@/constants/paths";
@@ -33,16 +35,20 @@ export default function Navbar() {
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
   const { data: activeGameData } = useActiveGame();
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+
+  function closeMobileMenu() {
+    mobileMenuRef.current?.removeAttribute("open");
+  }
 
   const activeGame =
     activeGameData?.game && activeGameData.game.status === "active"
       ? activeGameData.game
       : null;
 
-  let routesToRender: NavRoute[] = [];
+  let routesToRender: NavRoute[];
 
   if (pathname === PATHS.HOME && !isAuthenticated) {
-    // Landing page
     routesToRender = [
       { label: "Entrar", href: PATHS.NARRATIVE },
       { label: "Registrar-se", href: PATHS.REGISTER },
@@ -52,11 +58,12 @@ export default function Navbar() {
 
     if (activeGame) {
       const currentOrder = activeGame.currentRoom.order;
-      const roomsDropdown: NavDropdownItem[] = ALL_ROOMS.map((r) => ({
-        label: r.label,
-        href: `${PATHS.ROOM}/${formatRoomUrl(r.order)}`,
-        disabled: r.order > currentOrder,
+      const roomsDropdown: NavDropdownItem[] = ALL_ROOMS.map((room) => ({
+        label: room.label,
+        href: `${PATHS.ROOM}/${formatRoomUrl(room.order)}`,
+        disabled: room.order > currentOrder,
       }));
+
       routesToRender.push({ label: "Sales", dropdown: roomsDropdown });
     }
 
@@ -84,20 +91,94 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center p-6">
         <Link
           href={PATHS.HOME}
+          onClick={closeMobileMenu}
           className="text-xl font-bold tracking-tighter text-cyan-400 hover:text-cyan-200"
         >
           ABYSS AI
         </Link>
-        <div className="flex gap-8 text-[10px] tracking-[0.3em] text-cyan-800 uppercase font-bold">
+
+        <details ref={mobileMenuRef} className="relative md:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center rounded border border-cyan-500/40 px-3 text-sm font-bold text-cyan-200">
+            ☰ Menú
+          </summary>
+
+          <div className="absolute right-0 top-full z-50 mt-2 max-h-[70dvh] w-56 overflow-y-auto rounded border border-cyan-500/30 bg-slate-950 p-2 text-sm text-cyan-200">
+            {routesToRender.map((route) => {
+              if (route.dropdown) {
+                return (
+                  <details key={route.label} className="px-3">
+                    <summary className="flex min-h-11 cursor-pointer items-center gap-2">
+                      {route.label} <span aria-hidden="true">▾</span>
+                    </summary>
+
+                    <div className="pl-3">
+                      {route.dropdown.map((item) =>
+                        item.disabled ? (
+                          <span
+                            key={item.href}
+                            aria-disabled="true"
+                            className="block py-3 text-cyan-400/60 line-through"
+                          >
+                            {item.label}
+                          </span>
+                        ) : (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={closeMobileMenu}
+                            aria-current={
+                              pathname === item.href ? "page" : undefined
+                            }
+                            className="block py-3"
+                          >
+                            {item.label}
+                          </Link>
+                        ),
+                      )}
+                    </div>
+                  </details>
+                );
+              }
+
+              if (route.href) {
+                return (
+                  <Link
+                    key={route.label}
+                    href={route.href}
+                    onClick={closeMobileMenu}
+                    aria-current={pathname === route.href ? "page" : undefined}
+                    className="flex min-h-11 items-center px-3"
+                  >
+                    {route.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={route.label}
+                  type="button"
+                  onClick={() => {
+                    closeMobileMenu();
+                    route.onClick?.();
+                  }}
+                  className="block min-h-11 w-full px-3 text-left"
+                >
+                  {route.label}
+                </button>
+              );
+            })}
+          </div>
+        </details>
+
+        <div className="hidden md:flex gap-8 text-[10px] tracking-[0.3em] text-cyan-800 uppercase font-bold">
           {routesToRender.map((route) =>
             route.dropdown ? (
               <div key={route.label} className="relative group">
                 <span className="cursor-pointer hover:text-cyan-400">
                   {route.label}
                 </span>
-                {/* Wrapper amb padding-top perquè el gap entre el label i el menú
-                  segueixi sent part del hover (evita que el popup es tanqui
-                  en moure el cursor des de SALES cap al dropdown). */}
+
                 <div className="absolute left-0 top-full hidden group-hover:block pt-2 z-50">
                   <div className="flex flex-col bg-cyan-950 border border-cyan-500/30 p-2">
                     {route.dropdown.map((item) =>
